@@ -83,7 +83,7 @@ class RecipeApp:
             img_url = ing["image"]
             response = requests.get(img_url)
             image = Image.open(BytesIO(response.content))
-            image = image.resize((100, 100))
+            image = image.resize((50, 50))
             photo = ImageTk.PhotoImage(image)
             image_label = ttk.Label(ing_frame, image=photo)
             image_label.grid(row=index, column=1, padx=5, pady=5)
@@ -95,5 +95,3 @@ class RecipeApp:
 
         inst_button = ttk.Label(inst_frame, text=self.extractor.getInstructions(index=index), wraplength=950)
         inst_button.grid(row=len(recipe["ingredients"]) + 1, column=0, padx=5, pady=5)
-
-

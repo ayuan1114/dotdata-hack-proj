@@ -1,6 +1,8 @@
+# author: Aaron Yuan
+
 import requests
 
-
+# Class that retrieves desired recipe information from API
 class RecipeExtract:
     def __init__(self, ingredients: list, number=5):
         self.number = number
@@ -53,6 +55,7 @@ class RecipeExtract:
         for recipe in raw:
             newRecipe = {}
             newRecipe["name"] = recipe["title"]
+            newRecipe["id"] = recipe["id"]
             newRecipe["imageType"] = recipe["imageType"]
             newRecipe["image"] = recipe["image"]
             newRecipe["numMissing"] = recipe["missedIngredientCount"]
@@ -69,10 +72,27 @@ class RecipeExtract:
         return [recipe["name"] for recipe in self.recipes]
 
     def getRecipe(self, index=-1, name="") -> dict:
-        if (index != -1):
+        if (index >= 0):
             return self.recipes[index]
         if (name != ""):
             for recipe in self.recipes:
                 if recipe["name"] == name:
                     return recipe
         return {}
+
+    def getInstructions(self, index=-1, name=""):
+        recipe = self.getRecipe(index=index, name=name)
+        if "instructions" in recipe.keys():
+            return recipe["instructions"]
+        url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/" + str(recipe["id"]) + "/information"
+
+        headers = {
+            "X-RapidAPI-Key": "a815efa3e5msh871c0c4b35a214cp104d38jsne96a4aadce16",
+            "X-RapidAPI-Host": "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
+        }
+
+        response = requests.get(url, headers=headers)
+
+        recipe["instructions"] = response.json()["instructions"]
+
+        return recipe["instructions"]
